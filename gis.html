@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>OpenLayers Map</title>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.9.0/proj4.js" integrity="sha512-lO8f7sIViqr9x5VE6Q72PS6f4FoZcuh5W9YzeSyfNRJ9z/qL3bkweiwG6keGzWS0BQzNDqAWXdBhYzFD6KffIw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  </head>
+  <body>
+    <div id="map" style="width: 100%; height: 700px;"></div>
+    <script>
+      // proj4.defs["EPSG:WGS84"] = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
+      // proj4.defs["EPSG:900913"] = "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs";
+
+      var EPSG_WGS84 = new proj4.Proj('WGS84');    
+      var EPSG_900913 = new proj4.Proj('EPSG:900913');
+
+      
+      var map = new ol.Map({
+        target: 'map',
+        view: new ol.View({
+          center: ol.proj.fromLonLat([107.121338,10.448773]), // tọa độ trung tâm của bản đồ (theo hệ tọa độ WGS84)
+          zoom: 14 // mức độ phóng ban đầu
+        })
+      });
+      var layer = new ol.layer.Tile({
+        className: "layer_OSM",
+        source: new ol.source.OSM() // sử dụng OpenStreetMap làm nguồn dữ liệu bản đồ
+      });
+      var layer_google = new ol.layer.Tile({
+        source: new ol.source.XYZ({
+            url:'https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+          }), // sử dụng OpenStreetMap làm nguồn dữ liệu bản đồ
+      });
+      // var layer_ahocevar = new ol.layer.Tile({
+      //   className: "layer_signal",
+      //   source: new ol.source.TileWMS({
+      //     url: 'https://ahocevar.com/geoserver/wms',
+      //     params: {
+      //       'LAYERS': 'ne:NE1_HR_LC_SR_W_DR',
+      //       'TILED': true,
+      //     },
+      //   })
+      // });
+      
+      var layer_signal = new ol.layer.Tile({
+        className: "layer_signal",
+        source: new ol.source.TileWMS({
+          url: 'http://10.70.123.74:31808/geoserver/wms',
+          params: {
+            'LAYERS': 'VungTau_141_95:dulieu_baohieu',
+            'TILED': true
+          }
+        }),
+        maxZoom: 20,
+        minZoom: 10,
+      });
+
+      map.addLayer(layer_google);
+      map.addLayer(layer_signal);
+
+      map.on('singleclick', function (evt) {
+        const coordinate = evt.coordinate;
+        console.log("coordinate EPSG_900913::: ", coordinate);
+        var x = proj4.transform(EPSG_900913, EPSG_WGS84, coordinate);
+        console.log("coordinate EPSG_WGS84::: ", x);
+
+        for (let layer of map.getAllLayers()) {
+          console.log(`layer:: ${layer.getClassName()} has Visibale ${layer.getVisible()}`)
+        }
+      });
+
+    </script>
+  </body>
+</html>
+
