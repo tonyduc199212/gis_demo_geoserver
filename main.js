@@ -8,6 +8,7 @@ import {toStringHDMS} from 'ol/coordinate.js';
 import TileWMS from 'ol/source/TileWMS.js';
 import OSM from 'ol/source/OSM.js';
 import {$,jQuery} from 'jquery';
+import proj4 from 'proj4';
 window.$ = $;
 window.jQuery = jQuery;
 /**
@@ -16,7 +17,8 @@ window.jQuery = jQuery;
 const container = document.getElementById('popup');
 const content = document.getElementById('popup-content');
 const closer = document.getElementById('popup-closer');
-
+var EPSG_WGS84 = new proj4.Proj('WGS84');    
+var EPSG_900913 = new proj4.Proj('EPSG:900913');
 /**
  * Create an overlay to anchor the popup to the map.
  */
@@ -75,9 +77,10 @@ const map = new Map({
   //https://mt0.google.com/vt/lyrs=m&x=819&y=483&z=10
   var layer_signal = new TileLayer({
     source: new TileWMS({
-      url: 'http://10.70.123.74:31808/geoserver/wms',
+      // url: 'http://10.70.123.74:31808/geoserver/wms',
+      url: 'http://10.159.131.28:31808/geoserver/wms',
       params: {
-        'LAYERS': 'VungTau_141_95:dulieu_baohieu',
+        'LAYERS': 'db1:line',
         'TILED': true
       },
       
@@ -88,9 +91,10 @@ const map = new Map({
 
   var layer_tuyen = new TileLayer({
     source: new TileWMS({
-      url: 'http://10.70.123.74:31808/geoserver/wms',
+      // url: 'http://10.70.123.74:31808/geoserver/wms',
+      url: 'http://10.159.131.28:31808/geoserver/wms',
       params: {
-        'LAYERS': 'VungTau_141_95:dulieu_tuyendtnd',
+        'LAYERS': 'db1:polygon',
         'TILED': true
       },
       
@@ -132,8 +136,16 @@ const map = new Map({
  */
 map.on('singleclick', function (evt) {
   const coordinate = evt.coordinate;
-  const hdms = toStringHDMS(toLonLat(coordinate));
-
-  content.innerHTML = '<p>You clicked here:</p><code>' + coordinate + '</code>';
+  // const hdms = toStringHDMS(toLonLat(coordinate));
+  var x = proj4.transform(EPSG_900913, EPSG_WGS84, coordinate);
+  // console.log(x)
+  // let bbox = `${x.x},${x.y},${x.x},${x.y}`
+  // let url = "http://10.159.131.28:31808/geoserver/db1/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=application/json&QUERY_LAYERS={layer}&LAYERS={layer}&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&STYLES=&WIDTH=101&HEIGHT=101&BBOX={bbox}"
+  // let _url = url.replaceAll("{layer}","db1:polygon").replaceAll("{bbox}",bbox)
+  // // window.$.get(_url,(data)=>{console.log(data)})
+  // fetch(_url)
+  // .then((response) => response.json())
+  // .then((json) => console.log(json));
+  content.innerHTML = `<p>You clicked here:</p><code> ${x.x}, ${x.y}  </code>`;
   overlay.setPosition(coordinate);
 });
