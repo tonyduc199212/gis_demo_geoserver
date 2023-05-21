@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Popup</title>
-    <link rel="stylesheet" href="node_modules/ol/ol.css">
+    <link rel="stylesheet" href="http://127.0.0.1:5173/node_modules/ol/ol.css">
     <style>
       .map {
         width: 100%;
@@ -17,7 +17,8 @@
         border-radius: 10px;
         border: 1px solid #cccccc;
         bottom: 12px;
-        left: -50px;
+        /* left: -50px; */
+        left: 600px;
         min-width: 280px;
       }
       .layer-hide-show {
@@ -74,16 +75,20 @@
         <label for="layer0"> OSM</label><br>
         
         <input type="checkbox" checked="checked" id="layer1" name="layer1" value="layer1">
-        <label for="vehicle1"> Lớp báo hiệu</label><br>
+        <label for="vehicle1"> Line</label><br>
         <input type="checkbox" checked="checked" id="layer2" name="layer2" value="layer2">
-        <label for="vehicle2"> Lớp tuyến</label><br>
+        <label for="vehicle2"> Polygon</label><br>
     </div>
-    <div id="popup" class="ol-popup">
+    <div id="layer" style ="top: 250px" class="layer-hide-show">
+      <h1>Thông tin</h1>
+      <div id="popup-content"></div>
+  </div>
+    <!-- <div id="popup" class="ol-popup">
       <a href="#" id="popup-closer" class="ol-popup-closer"></a>
       <div id="popup-content"></div>
-    </div>
+    </div> -->
     <!-- Pointer events polyfill for old browsers, see https://caniuse.com/#feat=pointer -->
     <script src="https://cdn.jsdelivr.net/npm/elm-pep@1.0.6/dist/elm-pep.js"></script>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="http://127.0.0.1:5173/main.js"></script>
   </body>
 </html>
